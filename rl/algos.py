@@ -21,6 +21,8 @@ from helpers.garage_utility import log_performance
 
 # yapf: enable
 
+import garage.torch.algos.sac.SAC as sac
+import torch
 
 class NPO(RLAlgorithm):
     """Natural Policy Gradient Optimization implementation from garage
@@ -727,3 +729,126 @@ class VPG(NPO):
                          stop_entropy_gradient=stop_entropy_gradient,
                          entropy_method=entropy_method,
                          name=name)
+
+
+class SAC(sac):
+    """Soft Actor Critic implementation in pytorch from garage
+    (https://github.com/rlworkgroup/garage/blob/master/src/garage/torch/algos/sac.py).
+
+    Args:
+        policy (garage.torch.policy.Policy): Policy/Actor/Agent that is being
+            optimized by SAC.
+        qf1 (garage.torch.q_function.ContinuousMLPQFunction): QFunction/Critic
+            used for actor/policy optimization. See Soft Actor-Critic and
+            Applications.
+        qf2 (garage.torch.q_function.ContinuousMLPQFunction): QFunction/Critic
+            used for actor/policy optimization. See Soft Actor-Critic and
+            Applications.
+        replay_buffer (ReplayBuffer): Stores transitions that are previously
+            collected by the sampler.
+        sampler (garage.sampler.Sampler): Sampler.
+        env_spec (EnvSpec): The env_spec attribute of the environment that the
+            agent is being trained in.
+        max_episode_length_eval (int or None): Maximum length of episodes used
+            for off-policy evaluation. If None, defaults to
+            `env_spec.max_episode_length`.
+        gradient_steps_per_itr (int): Number of optimization steps that should
+        gradient_steps_per_itr(int): Number of optimization steps that should
+            occur before the training step is over and a new batch of
+            transitions is collected by the sampler.
+        fixed_alpha (float): The entropy/temperature to be used if temperature
+            is not supposed to be learned.
+        target_entropy (float): target entropy to be used during
+            entropy/temperature optimization. If None, the default heuristic
+            from Soft Actor-Critic Algorithms and Applications is used.
+        initial_log_entropy (float): initial entropy/temperature coefficient
+            to be used if a fixed_alpha is not being used (fixed_alpha=None),
+            and the entropy/temperature coefficient is being learned.
+        discount (float): Discount factor to be used during sampling and
+            critic/q_function optimization.
+        buffer_batch_size (int): The number of transitions sampled from the
+            replay buffer that are used during a single optimization step.
+        min_buffer_size (int): The minimum number of transitions that need to
+            be in the replay buffer before training can begin.
+        target_update_tau (float): coefficient that controls the rate at which
+            the target q_functions update over optimization iterations.
+        policy_lr (float): learning rate for policy optimizers.
+        qf_lr (float): learning rate for q_function optimizers.
+        reward_scale (float): reward scale. Changing this hyperparameter
+            changes the effect that the reward from a transition will have
+            during optimization.
+        optimizer (torch.optim.Optimizer): optimizer to be used for
+            policy/actor, q_functions/critics, and temperature/entropy
+            optimizations.
+        steps_per_epoch (int): Number of train_once calls per epoch.
+        num_evaluation_episodes (int): The number of evaluation episodes used
+            for computing eval stats at the end of every epoch.
+        eval_env (Environment): environment used for collecting evaluation
+            episodes. If None, a copy of the train env is used.
+        use_deterministic_evaluation (bool): True if the trained policy
+            should be evaluated deterministically.
+        temporal_regularization_factor (float): coefficient that determines
+            the temporal regularization penalty as defined in CAPS as lambda_t
+        spatial_regularization_factor (float): coefficient that determines
+            the spatial regularization penalty as defined in CAPS as lambda_s
+        spatial_regularization_eps (float): sigma of the normal distribution
+            from with spatial regularization observations are drawn,
+            in caps this is defined as epsilon_s
+    """
+    
+
+    def __init__(self,
+                 env_spec,
+                 policy,
+                 qf1,
+                 qf2,
+                 replay_buffer,
+                 sampler,
+                 *,  # Everything after this is numbers.
+                 max_episode_length_eval=None,
+                 gradient_steps_per_itr,
+                 fixed_alpha=None,
+                 target_entropy=None,
+                 initial_log_entropy=0.,
+                 discount=0.99,
+                 buffer_batch_size=64,
+                 min_buffer_size=int(1e4),
+                 target_update_tau=5e-3,
+                 policy_lr=3e-4,
+                 qf_lr=3e-4,
+                 reward_scale=1.0,
+                 optimizer=torch.optim.Adam,
+                 steps_per_epoch=1,
+                 num_evaluation_episodes=10,
+                 eval_env=None,
+                 use_deterministic_evaluation=True,
+                 temporal_regularization_factor=0.,
+                 spatial_regularization_factor=0.,
+                 spatial_regularization_eps=1.):
+
+        super.__init__(env_spec,
+                      policy,
+                      qf1,
+                      qf2,
+                      replay_buffer,
+                      sampler,
+                      max_episode_length_eval,
+                      gradient_steps_per_itr,
+                      fixed_alpha,
+                      target_entropy,
+                      initial_log_entropy,
+                      discount,
+                      buffer_batch_size,
+                      min_buffer_size,
+                      target_update_tau,
+                      policy_lr,
+                      qf_lr,
+                      reward_scale,
+                      optimizer,
+                      steps_per_epoch,
+                      num_evaluation_episodes,
+                      eval_env,
+                      use_deterministic_evaluation,
+                      temporal_regularization_factor,
+                      spatial_regularization_factor,
+                      spatial_regularization_eps)
