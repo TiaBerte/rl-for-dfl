@@ -67,6 +67,7 @@ def train(ctxt: SnapshotConfig = None,
         set_gpu_mode(True)
     else:
         set_gpu_mode(False)
+        
     algo.to()
 
     trainer = Trainer(snapshot_config=ctxt)
