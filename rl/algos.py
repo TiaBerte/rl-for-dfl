@@ -826,7 +826,7 @@ class SAC(sac):
                  spatial_regularization_factor=0.,
                  spatial_regularization_eps=1.):
 
-        super.__init__(env_spec,
+        super().__init__(env_spec,
                       policy,
                       qf1,
                       qf2,
