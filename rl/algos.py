@@ -21,7 +21,7 @@ from helpers.garage_utility import log_performance
 
 # yapf: enable
 
-import garage.torch.algos.sac.SAC as sac
+from garage.torch.algos.sac import SAC as sac
 import torch
 
 class NPO(RLAlgorithm):
