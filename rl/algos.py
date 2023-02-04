@@ -752,7 +752,6 @@ class SAC(sac):
         max_episode_length_eval (int or None): Maximum length of episodes used
             for off-policy evaluation. If None, defaults to
             `env_spec.max_episode_length`.
-        gradient_steps_per_itr (int): Number of optimization steps that should
         gradient_steps_per_itr(int): Number of optimization steps that should
             occur before the training step is over and a new batch of
             transitions is collected by the sampler.
@@ -804,9 +803,8 @@ class SAC(sac):
                  qf2,
                  replay_buffer,
                  sampler,
-                 *,  # Everything after this is numbers.
                  max_episode_length_eval=None,
-                 gradient_steps_per_itr,
+                 gradient_steps_per_itr=1,
                  fixed_alpha=None,
                  target_entropy=None,
                  initial_log_entropy=0.,
@@ -826,29 +824,29 @@ class SAC(sac):
                  spatial_regularization_factor=0.,
                  spatial_regularization_eps=1.):
 
-        super().__init__(env_spec,
-                      policy,
-                      qf1,
-                      qf2,
-                      replay_buffer,
-                      sampler,
-                      max_episode_length_eval,
-                      gradient_steps_per_itr,
-                      fixed_alpha,
-                      target_entropy,
-                      initial_log_entropy,
-                      discount,
-                      buffer_batch_size,
-                      min_buffer_size,
-                      target_update_tau,
-                      policy_lr,
-                      qf_lr,
-                      reward_scale,
-                      optimizer,
-                      steps_per_epoch,
-                      num_evaluation_episodes,
-                      eval_env,
-                      use_deterministic_evaluation,
-                      temporal_regularization_factor,
-                      spatial_regularization_factor,
-                      spatial_regularization_eps)
+        super().__init__(env_spec = env_spec,
+                        policy = policy,
+                        qf1=qf1,
+                        qf2=qf2,
+                        replay_buffer=replay_buffer,
+                        sampler=sampler,
+                        max_episode_length_eval=max_episode_length_eval,
+                        gradient_steps_per_itr=gradient_steps_per_itr,
+                        fixed_alpha=fixed_alpha,
+                        target_entropy=target_entropy,
+                        initial_log_entropy=initial_log_entropy,
+                        discount=discount,
+                        buffer_batch_size=buffer_batch_size,
+                        min_buffer_size=min_buffer_size,
+                        target_update_tau=target_update_tau,
+                        policy_lr=policy_lr,
+                        qf_lr=qf_lr,
+                        reward_scale=reward_scale,
+                        optimizer=optimizer,
+                        steps_per_epoch=steps_per_epoch,
+                        num_evaluation_episodes=num_evaluation_episodes,
+                        eval_env=eval_env,
+                        use_deterministic_evaluation=use_deterministic_evaluation,
+                        temporal_regularization_factor=temporal_regularization_factor,
+                        spatial_regularization_factor=spatial_regularization_factor,
+                        spatial_regularization_eps=spatial_regularization_eps)
