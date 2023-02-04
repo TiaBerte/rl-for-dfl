@@ -9,8 +9,8 @@ class ReplayBuffer(replayBuffer):
     Method sample_transition need to be implemented. In GitHub it's an abstrac method
     """
 
-    def __init__(self, env_spec, size_in_transitions, time_horizon):
-        super.__init__(env_spec, size_in_transitions, time_horizon)
+    def __init__(self, size_in_transitions, time_horizon):
+        super().__init__(env_spec=None, size_in_transitions=size_in_transitions, time_horizon=time_horizon)
 
 
     def sample(self, batch_size):
