@@ -803,6 +803,7 @@ class SAC(sac):
                  qf2,
                  replay_buffer,
                  sampler,
+                 *,  # Everything after this is numbers.
                  max_episode_length_eval=None,
                  gradient_steps_per_itr=1,
                  fixed_alpha=None,
@@ -810,7 +811,7 @@ class SAC(sac):
                  initial_log_entropy=0.,
                  discount=0.99,
                  buffer_batch_size=64,
-                 min_buffer_size=int(1e4),
+                 min_buffer_size=1e4,
                  target_update_tau=5e-3,
                  policy_lr=3e-4,
                  qf_lr=3e-4,
@@ -820,12 +821,12 @@ class SAC(sac):
                  num_evaluation_episodes=10,
                  eval_env=None,
                  use_deterministic_evaluation=True,
-                 temporal_regularization_factor=0.,
-                 spatial_regularization_factor=0.,
-                 spatial_regularization_eps=1.):
+                 temporal_regularization_factor=0,
+                 spatial_regularization_factor=0,
+                 spatial_regularization_eps=1):
 
-        super().__init__(env_spec = env_spec,
-                        policy = policy,
+        super().__init__(env_spec=env_spec,
+                        policy=policy,
                         qf1=qf1,
                         qf2=qf2,
                         replay_buffer=replay_buffer,
@@ -847,6 +848,9 @@ class SAC(sac):
                         num_evaluation_episodes=num_evaluation_episodes,
                         eval_env=eval_env,
                         use_deterministic_evaluation=use_deterministic_evaluation,
-                        temporal_regularization_factor=temporal_regularization_factor,
-                        spatial_regularization_factor=spatial_regularization_factor,
-                        spatial_regularization_eps=spatial_regularization_eps)
+                        #temporal_regularization_factor=temporal_regularization_factor,
+                        #spatial_regularization_factor=spatial_regularization_factor,
+                        #spatial_regularization_eps=spatial_regularization_eps
+                         )
+        
+    
