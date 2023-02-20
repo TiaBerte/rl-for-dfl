@@ -7,7 +7,7 @@ import time
 from dowel import logger, tabular
 import numpy as np
 import tensorflow as tf
-
+import torch.nn.functional as F
 from garage import make_optimizer
 from garage.np import explained_variance_1d, pad_batch_array
 from garage.np.algos import RLAlgorithm
@@ -823,7 +823,8 @@ class SAC(sac):
                  use_deterministic_evaluation=True,
                  temporal_regularization_factor=0,
                  spatial_regularization_factor=0,
-                 spatial_regularization_eps=1):
+                 spatial_regularization_eps=1,
+                 K_avg = 0):
 
         super().__init__(env_spec=env_spec,
                         policy=policy,
@@ -852,5 +853,62 @@ class SAC(sac):
                         #spatial_regularization_factor=spatial_regularization_factor,
                         #spatial_regularization_eps=spatial_regularization_eps
                          )
-        
+
+        self.K_avg = K_avg
+        if self.K_avg :
+            self.value_list = []
+            
+
+        def _critic_objective(self, samples_data):
+            """Compute the Q-function/critic loss.
+            Args:
+                samples_data (dict): Transitions(S,A,R,S') that are sampled from
+                    the replay buffer. It should have the keys 'observation',
+                    'action', 'reward', 'terminal', and 'next_observations'.
+            Note:
+                samples_data's entries should be torch.Tensor's with the following
+                shapes:
+                    observation: :math:`(N, O^*)`
+                    action: :math:`(N, A^*)`
+                    reward: :math:`(N, 1)`
+                    terminal: :math:`(N, 1)`
+                    next_observation: :math:`(N, O^*)`
+            Returns:
+                torch.Tensor: loss from 1st q-function after optimization.
+                torch.Tensor: loss from 2nd q-function after optimization.
+            """
+            obs = samples_data['observation']
+            actions = samples_data['action']
+            rewards = samples_data['reward'].flatten()
+            terminals = samples_data['terminal'].flatten()
+            next_obs = samples_data['next_observation']
+            with torch.no_grad():
+                alpha = self._get_log_alpha(samples_data).exp()
+
+            q1_pred = self._qf1(obs, actions)
+            q2_pred = self._qf2(obs, actions)
+
+            new_next_actions_dist = self.policy(next_obs)[0]
+            new_next_actions_pre_tanh, new_next_actions = (
+                new_next_actions_dist.rsample_with_pre_tanh_value())
+            new_log_pi = new_next_actions_dist.log_prob(
+                value=new_next_actions, pre_tanh_value=new_next_actions_pre_tanh)
+
+            if self.K_avg:
+                new_value = alpha * new_log_pi
+                self.value_list = torch.cat([self.value_list[:, 1:], new_value.view(-1, 1)], dim=1)
+                value = self.value_list.mean(axis=1).view(-1, 1)
+            else :
+                value = alpha * new_log_pi
+            target_q_values = torch.min(
+                self._target_qf1(next_obs, new_next_actions),
+                self._target_qf2(
+                    next_obs, new_next_actions)).flatten() - value
+            with torch.no_grad():
+                q_target = rewards * self._reward_scale + (
+                    1. - terminals) * self._discount * target_q_values
+            qf1_loss = F.mse_loss(q1_pred.flatten(), q_target)
+            qf2_loss = F.mse_loss(q2_pred.flatten(), q_target)
+
+            return qf1_loss, qf2_loss
     
