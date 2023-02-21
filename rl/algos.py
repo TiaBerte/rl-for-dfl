@@ -15,6 +15,7 @@ from garage.tf import (center_advs, compile_function, compute_advantages,
                        discounted_returns, flatten_inputs, graph_inputs,
                        positive_advs)
 from garage.tf.optimizers import FirstOrderOptimizer
+from garage.torch import global_device
 
 # NOTE: use a custom logging function
 from helpers.garage_utility import log_performance
@@ -855,11 +856,13 @@ class SAC(sac):
                          )
 
         self.K_avg = K_avg
+        device = global_device()
         if self.K_avg :
-            self.value_list = []
+            self.value_list = torch.zeros([buffer_batch_size, K_avg]).to(device)
+
             
 
-        def _critic_objective(self, samples_data):
+    def _critic_objective(self, samples_data):
             """Compute the Q-function/critic loss.
             Args:
                 samples_data (dict): Transitions(S,A,R,S') that are sampled from
@@ -911,4 +914,3 @@ class SAC(sac):
             qf2_loss = F.mse_loss(q2_pred.flatten(), q_target)
 
             return qf1_loss, qf2_loss
-    
