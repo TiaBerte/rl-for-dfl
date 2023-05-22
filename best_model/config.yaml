@@ -1,0 +1,9 @@
+alpha: 0.6
+annealing_rate: 0.4
+batch_size: 1024
+beta_start: 0.4
+epochs: 700
+hidden_dim: 512
+optim: Adam
+policy_lr: 0.003
+qnet_lr: 0.03
