@@ -7,6 +7,6 @@ A more exhaustive analysis of the experiemtns and of the results can be found in
 
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 <p align="center">
-<img src="https://github.com/TiaBerte/rl-for-dfl/assets/33131887/846ba992-2b52-4c9f-9c6c-f6c8d35ddf9d"  width="600" height="300">
+<img src="https://github.com/TiaBerte/rl-for-dfl/assets/33131887/f095f486-ae53-4bce-a12c-d87002bfd77a"  width="600" height="300">
 </p>
 
