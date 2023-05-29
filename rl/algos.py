@@ -940,6 +940,7 @@ class SAC(sac):
                             min_q_new_actions.flatten())
         if self.per :
             self.replay_buffer.update_priorities(torch.abs(policy_objective))
+            policy_objective = torch.mul(policy_objective,  torch.tensor(self.replay_buffer.normalized_weights))
         return policy_objective.mean()
     
 class PPO(ppo):
